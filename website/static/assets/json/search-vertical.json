@@ -1,0 +1,14 @@
+{
+  "pages": [
+    {
+      "name": "Dashboard",
+      "icon": "ti-smart-home",
+      "url": "/"
+    },
+    {
+      "name": "Scan QR",
+      "icon": "ti-qrcode",
+      "url": "/scanqr"
+    }
+  ]
+}

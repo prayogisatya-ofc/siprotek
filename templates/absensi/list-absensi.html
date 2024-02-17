@@ -1,0 +1,130 @@
+{% extends "layout.html" %}
+{% load static %}
+
+{% block vendor %}
+<link rel="stylesheet" href="{% static 'assets/vendor/libs/select2/select2.css' %}" />
+{% endblock vendor %}
+
+{% block title %}
+    Semua Absensi
+{% endblock title %}
+
+{% block content %}
+<div class="container-xxl flex-grow-1 container-p-y" id="app">
+    <h4 class="py-3 mb-2"><span class="text-muted fw-light">Abseni /</span> Semua Abseni</h4>
+
+    <div class="card">
+        <div class="card-header">
+            <div class="row align-items-end">
+                <div class="col-md-2 mb-3 mb-md-0">
+                    <label class="form-label">Tanggal Dari</label>
+                    <input type="date" class="form-control" v-model="start_date" @change="getDatas(1)">
+                </div>
+                <div class="col-md-2 mb-3 mb-md-0">
+                    <label class="form-label">Tanggal Sampai</label>
+                    <input type="date" class="form-control" v-model="end_date" @change="getDatas(1)">
+                </div>
+                {% if request.user.role == 'admin' %}
+                <div class="col-md-3 mb-3 mb-md-0">
+                    <label class="form-label">Divisi</label>
+                    <select class="form-control select2 form-select" data-allow-clear="true" data-placeholder="Divisi">
+                        <option value="">Pilih Divisi</option>
+                        {% for division in divisions %}
+                        <option value="{{ division.uuid }}">{{ division.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                {% endif %}
+                <div class="{% if request.user.role == 'admin' %}col-md-5{% else %}col-md-8{% endif %}">
+                    <button class="btn btn-primary float-start float-md-end" data-bs-toggle="modal" data-bs-target="#modalAdd">
+                        <i class="ti ti-plus me-2"></i>
+                        <span>Tambah Absensi</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="table-responsive">
+            <table class="table border-top text-nowrap">
+                <thead>
+                    <tr>
+                        <th class="text-center">#</th>
+                        <th>Tanggal</th>
+                        <th class="text-center">Divisi</th>
+                        <th class="text-center">Kehadiran</th>
+                        <th class="text-center">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="(data, i) in datas" :key="data.uuid" class="text-center">
+                        <td>[[ i+1 ]]</td>
+                        <td class="text-start">[[ data.date ]]</td>
+                        <td>[[ data.division ]]</td>
+                        <td>
+                            <span class="badge bg-label-success">[[ data.present ]] anggota</span>
+                        </td>
+                        <td>
+                            <div class="d-flex align-items-sm-center justify-content-sm-center">
+                                <button class="btn btn-sm btn-icon delete-record me-2 text-danger" @click="deleteData(data.uuid, data.division, data.date)"><i class="ti ti-trash"></i></button>
+                                <a :href="'/presences/' + data.uuid" class="btn btn-sm btn-icon"><i class="ti ti-eye"></i></a>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr v-if="datas.length == 0">
+                        <td colspan="5" class="text-center">Tidak ada data yang dapat ditampilkan</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="card-footer">
+            <div class="row align-items-center">
+                <div class="col-xl-6 mb-3 mb-sm-0">
+                    <p class="mb-0 text-center text-sm-start">Halaman <b>[[ pagination.current_page_number ]]</b> dari <b>[[ pagination.total_page ]]</b> / <b>[[ pagination.total_data ]]</b> data</p>
+                </div>
+                <div class="col-xl-6">
+                    <div class="d-flex justify-content-center justify-content-sm-end">
+                        <button class="btn btn-primary me-2" @click="previousPage" :disabled="!pagination.has_previous">Previous</button>
+                        <button class="btn btn-primary" @click="nextPage" :disabled="!pagination.has_next">Next</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalAdd" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <form class="modal-content" @submit.prevent="onAdd">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalUpdateTitle">Tambah Absensi</h5>
+                    <button type="button" class="btn-close" @click="closeModal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    {% if request.user.role == 'admin' %}
+                    <div class="mb-3">
+                        <label class="form-label">Divisi</label>
+                        <select class="form-control form-select select2-2" data-allow-clear="true" data-placeholder="Divisi" required>
+                            <option value="">Divisi</option>
+                            {% for division in divisions %}
+                            <option value="{{ division.uuid }}">{{ division.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    {% endif %}
+                    <div>
+                        <label class="form-label">Catatan</label>
+                        <textarea cols="30" rows="5" class="form-control" required placeholder="Berikan catatan sedang bahas apa.." v-model="form.note"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-label-secondary" @click="closeModal">Tutup</button>
+                    <button type="submit" class="btn btn-primary">Simpan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock content %}
+
+{% block script %}
+<script src="{% static 'assets/vendor/libs/select2/select2.js' %}"></script>
+<script src="{% static 'assets/js/pages/page-list-absensi.js' %}"></script>
+{% endblock script %}

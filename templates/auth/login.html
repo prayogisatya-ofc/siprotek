@@ -1,0 +1,64 @@
+{% extends 'auth/layout.html' %}
+{% load static %}
+
+{% block title %}
+Login
+{% endblock title %}
+
+{% block content %}
+<div class="container-xxl" id="app">
+    <div class="authentication-wrapper authentication-basic container-p-y">
+        <div class="authentication-inner py-4">
+            <!-- Login -->
+            <div class="card">
+                <div class="card-body">
+                    <!-- Logo -->
+                    <div class="app-brand justify-content-center mb-4 mt-2">
+                        <a href="/" class="app-brand-link gap-2">
+                            <img src="{% static 'assets/img/branding/logo.png' %}" height="32" alt="logo-siprotek">
+                            <span class="app-brand-text demo text-body fw-bold ms-1">Si PROTEK</span>
+                        </a>
+                    </div>
+                    <!-- /Logo -->
+                    <h5 class="mb-1 pt-2">Selamat datang di Si PROTEK! 👋</h5>
+                    <p class="mb-4">Silahkan login ke akun kamu untuk belajar bareng kami</p>
+
+                    <form class="mb-3" method="POST" @submit.prevent="onSubmit">
+                        <div class="mb-3">
+                            <label for="email" class="form-label">NPM</label>
+                            <input type="text" class="form-control" id="email"
+                                placeholder="Masukkan NPM mu" autofocus v-model="form.npm"/>
+                        </div>
+                        <div class="mb-3 form-password-toggle">
+                            <label class="form-label" for="password">Password</label>
+                            <div class="input-group input-group-merge">
+                                <input :type="passwordFieldType" id="password" class="form-control"
+                                    placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;"
+                                    aria-describedby="password" v-model="form.password"/>
+                                <span class="input-group-text cursor-pointer" @click="togglePasswordVisibility">
+                                    <i :class="['ti', toggleButtonIcon]"></i>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="input-group">
+                                <span class="input-group-text">{{ num1 }} + {{ num2 }}</span>
+                                <input type="text" class="form-control" v-model="form.captcha" required>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <button class="btn btn-primary d-grid w-100" type="submit">Login</button>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+            <!-- /Register -->
+        </div>
+    </div>
+</div>
+{% endblock content %}
+
+{% block script %}
+<script src="{% static 'assets/js/pages/page-login.js' %}"></script>
+{% endblock script %}

@@ -1,0 +1,76 @@
+{% extends "layout.html" %}
+{% load static %}
+
+{% block vendor %}
+<link rel="stylesheet" href="{% static 'assets/vendor/libs/select2/select2.css' %}" />
+{% endblock vendor %}
+
+{% block title %}
+    Pengaturan Akun
+{% endblock title %}
+
+{% block content %}
+<div class="container-xxl flex-grow-1 container-p-y" id="app">
+    <h4 class="py-3 mb-4"><span class="text-muted fw-light">Akun /</span> Pengaturan Akun</h4>
+
+    <div class="row">
+        <div class="col-md-12">
+            <ul class="nav nav-pills flex-column flex-md-row mb-4">
+                <li class="nav-item">
+                    <a class="nav-link active" href="javascript:void(0);"><i class="ti-xs ti ti-users me-1"></i>Akun</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'password_views' %}"><i class="ti-xs ti ti-lock me-1"></i> Password</a>
+                </li>
+            </ul>
+            <div class="card mb-4">
+                <h5 class="card-header">Detail Profil</h5>
+                <div class="card-body">
+                    <form id="formAccountSettings" @submit.prevent="onSubmit">
+                        <div class="row">
+                            <div class="mb-3 col-md-6">
+                                <label class="form-label">Nama Depan</label>
+                                <input class="form-control" type="text" placeholder="Jhon" v-model="form.first_name" autofocus />
+                            </div>
+                            <div class="mb-3 col-md-6">
+                                <label class="form-label">Nama Belakang</label>
+                                <input class="form-control" type="text" placeholder="Doe" v-model="form.last_name" />
+                            </div>
+                            <div class="mb-3 col-md-6">
+                                <label class="form-label">NPM</label>
+                                <input class="form-control" type="text" v-model="form.npm" readonly />
+                                <small class="form-text">Hubungi admin untuk merubah NPM.</small>
+                            </div>
+                            <div class="mb-3 col-md-6">
+                                <label class="form-label">No. WhatsApp</label>
+                                <div class="input-group input-group-merge">
+                                    <span class="input-group-text">ID (+62)</span>
+                                    <input type="text" class="form-control" placeholder="81234567890" v-model="form.telp" />
+                                </div>
+                            </div>
+                            <div class="mb-3 col-md-6">
+                                <label class="form-label">Program Studi</label>
+                                <select class="select2 form-select">
+                                    <option value="">Pilih Prodi</option>
+                                    {% for major in majors %}
+                                    <option value="{{ major.uuid }}">{{ major.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mt-2">
+                            <button type="submit" class="btn btn-primary me-2">Simpan Perubahan</button>
+                            <a href="{% url 'dashboard_views' %}" class="btn btn-label-secondary">Batal</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
+
+{% block script %}
+<script src="{% static 'assets/vendor/libs/select2/select2.js' %}"></script>
+<script src="{% static 'assets/js/pages/page-akun.js' %}"></script>
+{% endblock script %}

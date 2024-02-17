@@ -1,0 +1,109 @@
+{% extends "layout.html" %}
+{% load static %}
+
+{% block vendor %}
+<link rel="stylesheet" href="{% static 'assets/vendor/libs/select2/select2.css' %}" />
+{% endblock vendor %}
+
+{% block title %}
+    Semua Divisi
+{% endblock title %}
+
+{% block content %}
+<div class="container-xxl flex-grow-1 container-p-y" id="app">
+    <h4 class="py-3 mb-2"><span class="text-muted fw-light">Data Divisi /</span> Semua Divisi</h4>
+
+    <div class="card">
+        <div class="card-header">
+            <div class="row align-items-end">
+                <div class="col-md-4 mb-3 mb-md-0">
+                    <label class="form-label">Cari</label>
+                    <input type="search" class="form-control" placeholder="Cari prodi..." v-model="search" @change="getDatas(1)">
+                </div>
+                <div class="col-md-8">
+                    <a href="{% url 'divisi_add_views' %}" class="btn btn-primary float-start float-md-end">
+                        <i class="ti ti-plus me-2"></i>
+                        <span>Tambah Divisi</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="table-responsive">
+            <table class="table border-top text-nowrap">
+                <thead>
+                    <tr>
+                        <th class="text-center">#</th>
+                        <th>Nama Divisi</th>
+                        <th>Tutor</th>
+                        <th class="text-center">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="(data, i) in datas" :key="data.uuid">
+                        <td class="text-center">[[ i+1 ]]</td>
+                        <td>[[ data.name ]]</td>
+                        <td>[[ data.tutor ]]</td>
+                        <td>
+                            <div class="d-flex align-items-sm-center justify-content-sm-center">
+                                <button class="btn btn-sm btn-icon delete-record me-2 text-danger" @click="deleteData(data.uuid, data.name)"><i class="ti ti-trash"></i></button>
+                                <button class="btn btn-sm btn-icon" @click="openModal(i)"><i class="ti ti-edit"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr v-if="datas.length == 0">
+                        <td colspan="4" class="text-center">Tidak ada data yang dapat ditampilkan</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="card-footer">
+            <div class="row align-items-center">
+                <div class="col-xl-6 mb-3 mb-sm-0">
+                    <p class="mb-0 text-center text-sm-start">Halaman <b>[[ pagination.current_page_number ]]</b> dari <b>[[ pagination.total_page ]]</b> / <b>[[ pagination.total_data ]]</b> data</p>
+                </div>
+                <div class="col-xl-6">
+                    <div class="d-flex justify-content-center justify-content-sm-end">
+                        <button class="btn btn-primary me-2" @click="previousPage" :disabled="!pagination.has_previous">Previous</button>
+                        <button class="btn btn-primary" @click="nextPage" :disabled="!pagination.has_next">Next</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalUpdate" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <form class="modal-content" @submit.prevent="onUpdate">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalUpdateTitle">Ubah Divisi</h5>
+                    <button type="button" class="btn-close" @click="closeModal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Nama Divisi</label>
+                        <input type="text" class="form-control" placeholder="Ex: Web Developer" v-model="selectedDivision.name" required />
+                    </div>
+                    <div>
+                        <label class="form-label">Tutor</label>
+                        <select class="form-control form-select select2" data-allow-clear="true" data-placeholder="Tutor" required>
+                            <option value="">Tutor</option>
+                            {% for tutor in tutors %}
+                            <option value="{{ tutor.uuid }}">{{ tutor.first_name }} {{ tutor.last_name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-label-secondary" @click="closeModal">Tutup</button>
+                    <button type="submit" class="btn btn-primary">Simpan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock content %}
+
+{% block script %}
+<script src="{% static 'assets/vendor/libs/select2/select2.js' %}"></script>
+<script src="{% static 'assets/js/pages/page-list-division.js' %}"></script>
+{% endblock script %}

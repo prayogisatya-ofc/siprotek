@@ -1,0 +1,155 @@
+{% extends "layout.html" %}
+{% load static %}
+
+{% block vendor %}
+<link rel="stylesheet" href="{% static 'assets/vendor/libs/select2/select2.css' %}" />
+{% endblock vendor %}
+
+{% block title %}
+Semua Anggota
+{% endblock title %}
+
+{% block content %}
+<div class="container-xxl flex-grow-1 container-p-y" id="app">
+    <h4 class="py-3 mb-2"><span class="text-muted fw-light">Data Anggota /</span> Semua Anggota</h4>
+
+    <div class="card">
+        <div class="card-header">
+            <div class="row align-items-end">
+                <div class="col-md-4 mb-3 mb-md-0">
+                    <label class="form-label">Cari</label>
+                    <input type="search" class="form-control" placeholder="Cari anggota..." v-model="search" @change="getDatas(1)">
+                </div>
+                <div class="col-md-3 mb-3 mb-md-0">
+                    <label class="form-label">Prodi</label>
+                    <select class="form-control select2 form-select" data-allow-clear="true" data-placeholder="Program Studi">
+                        <option value="">Program Studi</option>
+                        <option value="">Semua</option>
+                        {% for major in majors %}
+                        <option value="{{ major.uuid }}">{{ major.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2 mb-3 mb-md-0">
+                    <label class="form-label">Status</label>
+                    <select class="form-control form-select" v-model="status" @change="getDatas(1)">
+                        <option value="">Semua</option>
+                        <option value="true">Aktif</option>
+                        <option value="false">Nonaktif</option>
+                    </select>
+                </div>
+                {% if request.user.role == 'admin' %}
+                <div class="col-md-3">
+                    <button type="button" class="btn btn-primary dropdown-toggle waves-effect waves-light float-start float-md-end" data-bs-toggle="dropdown" aria-expanded="false">
+                        Tambah Anggota
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a class="dropdown-item" href="{% url 'members_add_views' %}">
+                                <i class="ti ti-plus me-2"></i>
+                                <span>Tambah Manual</span>
+                            </a>
+                        </li>
+                        <li>
+                            <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#modalImport">
+                                <i class="ti ti-table-import me-2"></i>
+                                <span>Import File</span>
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        <div class="table-responsive">
+            <table class="table border-top text-nowrap">
+                <thead>
+                    <tr>
+                        <th class="text-center">#</th>
+                        <th>Nama Lengkap</th>
+                        <th class="text-center">Program Studi</th>
+                        <th class="text-center">WhatsApp</th>
+                        <th class="text-center">Status Akun</th>
+                        {% if request.user.role == 'admin' %}
+                        <th class="text-center">Aksi</th>
+                        {% endif %}
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="(data, i) in datas" :key="data.uuid" class="text-center">
+                        <td>[[ i+1 ]]</td>
+                        <td>
+                            <div class="d-flex justify-content-start align-items-center customer-name">
+                                <div class="avatar-wrapper">
+                                    <div class="avatar me-2">
+                                        <img :src="'https://ui-avatars.com/api/?name=' + data.name + '&background=random'" alt class="h-auto rounded-circle" />
+                                    </div>
+                                </div>
+                                <div class="d-flex flex-column text-start">
+                                    <span class="fw-medium">[[ data.name ]]</span>
+                                    <small class="text-muted">[[ data.npm ]]</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>[[ data.major ]]</td>
+                        <td>
+                            <a :href="'https://wa.me/' + [[ data.telp ]]" target="_blank" class="btn btn-sm btn-icon text-success"><i class="ti ti-brand-whatsapp"></i></a>
+                        </td>
+                        <td>
+                            <span v-if="data.is_active" class="badge bg-label-success">Aktif</span>
+                            <span v-else class="badge bg-label-danger">Nonaktif</span>
+                        </td>
+                        {% if request.user.role == 'admin' %}
+                        <td>
+                            <div class="d-flex align-items-sm-center justify-content-sm-center">
+                                <button class="btn btn-sm btn-icon delete-record me-2 text-danger" @click="deleteData(data.uuid, data.name)"><i class="ti ti-trash"></i></button>
+                                <a :href="'/members/' + data.uuid" class="btn btn-sm btn-icon"><i class="ti ti-edit"></i></a>
+                            </div>
+                        </td>
+                        {% endif %}
+                    </tr>
+                    <tr v-if="datas.length == 0">
+                        <td colspan="6" class="text-center">Tidak ada data yang dapat ditampilkan</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="card-footer">
+            <div class="row align-items-center">
+                <div class="col-xl-6 mb-3 mb-sm-0">
+                    <p class="mb-0 text-center text-sm-start">Halaman <b>[[ pagination.current_page_number ]]</b> dari <b>[[ pagination.total_page ]]</b> / <b>[[ pagination.total_data ]]</b> data</p>
+                </div>
+                <div class="col-xl-6">
+                    <div class="d-flex justify-content-center justify-content-sm-end">
+                        <button class="btn btn-primary me-2" @click="previousPage" :disabled="!pagination.has_previous">Previous</button>
+                        <button class="btn btn-primary" @click="nextPage" :disabled="!pagination.has_next">Next</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalImport" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <form class="modal-content" @submit.prevent="onImport">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalUpdateTitle">Upload File</h5>
+                    <button type="button" class="btn-close" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="file" class="form-control" @change="onFileChange" required />
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">Tutup</button>
+                    <button type="submit" class="btn btn-primary">Import</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock content %}
+
+{% block script %}
+<script src="{% static 'assets/vendor/libs/select2/select2.js' %}"></script>
+<script src="{% static 'assets/js/pages/page-list-anggota.js' %}"></script>
+{% endblock script %}
