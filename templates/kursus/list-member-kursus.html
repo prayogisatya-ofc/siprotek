@@ -1,0 +1,100 @@
+{% extends "layout.html" %}
+{% load static %}
+
+{% block vendor %}
+<link rel="stylesheet" href="{% static 'assets/vendor/libs/select2/select2.css' %}" />
+<link rel="stylesheet" href="{% static 'assets/vendor/css/pages/app-academy.css' %}">
+{% endblock vendor %}
+
+{% block title %}
+    Semua Kursus
+{% endblock title %}
+
+{% block content %}
+<div class="container-xxl flex-grow-1 container-p-y" id="app">
+    <h4 class="py-3 mb-2"><span class="text-muted fw-light">Kursus /</span> Semua Kursus</h4>
+
+    <div class="app-academy">
+        <div class="card p-0 mb-4">
+            <div class="card-body d-flex flex-column flex-md-row justify-content-between p-0 pt-4">
+                <div class="app-academy-md-25 card-body py-0">
+                    <img src="{% static 'assets/img/illustrations/bulb-light.png' %}"
+                        class="img-fluid app-academy-img-height scaleX-n1-rtl" alt="Bulb in hand"
+                        data-app-light-img="illustrations/bulb-light.png" data-app-dark-img="illustrations/bulb-dark.png"
+                        height="90" />
+                </div>
+                <div class="app-academy-md-50 card-body d-flex align-items-md-center flex-column text-md-center">
+                    <h3 class="card-title mb-4 lh-sm px-md-5 lh-lg">
+                        Mulailah petualangan belajarmu bersama kami di
+                        <span class="text-primary fw-medium text-nowrap">UKM Protek</span>.
+                    </h3>
+                    <p class="mb-3">
+                        Kembangkan keterampilanmu dengan kursus dan pelatihan di bidang Web Development, UI/UX Design, Cyber Security, Mikrotik dan juga Mobile Development.
+                    </p>
+                    <div class="d-flex align-items-center justify-content-between app-academy-md-80">
+                        <input type="search" placeholder="Temukan kursus mu" class="form-control me-2" v-model="search" @change="getDatas()"/>
+                        <button type="button" @click="getDatas()" class="btn btn-primary btn-icon"><i class="ti ti-search"></i></button>
+                    </div>
+                </div>
+                <div class="app-academy-md-25 d-flex align-items-end justify-content-end">
+                    <img src="{% static 'assets/img/illustrations/pencil-rocket.png' %}" alt="pencil rocket" height="188"
+                        class="scaleX-n1-rtl" />
+                </div>
+            </div>
+        </div>
+    
+        <div class="card mb-4">
+            <div class="card-header d-flex flex-wrap justify-content-between gap-3">
+                <div class="card-title mb-0 me-1">
+                    <h5 class="mb-1">Semua Kursus</h5>
+                    <p class="text-muted mb-0">Total [[ datas.length ]] kursus tersedia untukmu</p>
+                </div>
+                <select id="select2_course_select" class="select2 form-select" data-allow-clear="true" data-placeholder="Semua Kursus">
+                    <option value="">Semua Kursus</option>
+                    {% for division in divisions %}
+                    <option value="{{ division.uuid }}">{{ division.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="card-body">
+                <div class="row gy-4 mb-4">
+                    <div class="col-sm-6 col-lg-4" v-for="data in datas" :key="data.uuid">
+                        <div class="card p-2 h-100 shadow-none border">
+                            <div class="rounded-2 text-center mb-3">
+                                <a :href="'/all-courses/' + data.slug">
+                                    <img class="img-fluid rounded" :src="data.thumbnail" :alt="[[ data.slug ]]" />
+                                </a>
+                            </div>
+                            <div class="card-body p-3 pt-2">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <span class="badge bg-label-primary">[[ data.division ]]</span>
+                                    <h6 class="d-flex align-items-center justify-content-center gap-1 mb-0">
+                                        [[ data.members ]]
+                                        <span class="text-warning">
+                                            <i class="ti ti-users me-1 mt-n1"></i>
+                                        </span>
+                                    </h6>
+                                </div>
+                                <a :href="'/all-courses/' + data.slug" class="h5">[[ data.title ]]</a>
+                                <p class="mt-2">Kelas pelatihan rutin</p>
+                                <a class="w-100 btn btn-label-primary" :href="'/all-courses/' + data.slug">
+                                    <span class="me-2">Lihat Detail</span>
+                                    <i class="ti ti-chevron-right scaleX-n1-rtl ti-sm"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-12 text-center" v-if="datas.length == 0">
+                        Belum ada kursus untuk kamu
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
+
+{% block script %}
+<script src="{% static 'assets/vendor/libs/select2/select2.js' %}"></script>
+<script src="{% static 'assets/js/pages/kursus/page-list-member-kursus.js' %}"></script>
+{% endblock script %}

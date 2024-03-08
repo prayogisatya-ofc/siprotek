@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from .. import models as db
+from course.models import *
 from django.http import JsonResponse
 from ..decorators import allowed_users
 
@@ -24,4 +25,5 @@ def views(request):
     elif request.user.role == 'tutor':
         return render(request, "dashboard.tutor.html", context)
     else:
+        context['courses'] = Enrolments.objects.filter(member=request.user)
         return render(request, "dashboard.member.html", context)

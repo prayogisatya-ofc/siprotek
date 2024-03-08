@@ -1,0 +1,99 @@
+{% extends "layout.html" %}
+{% load static %}
+
+{% block vendor %}
+<link rel="stylesheet" href="{% static 'assets/vendor/css/pages/app-academy-details.css' %}">
+{% endblock vendor %}
+
+{% block title %}
+    {{ course.title }}
+{% endblock title %}
+
+{% block content %}
+<div class="container-xxl flex-grow-1 container-p-y" id="app">
+    <h4 class="py-3 mb-2"><span class="text-muted fw-light">Kursus /</span> {{ course.title }}</h4>
+
+    <div class="card g-3">
+        <div class="card-body row g-3">
+            <div class="col-lg-9">
+                <div class="d-flex justify-content-between align-items-center flex-wrap mb-2 gap-1">
+                    <div class="me-1 mb-2">
+                        <h5 class="mb-1">{{ course.title }}</h5>
+                        <span class="badge bg-label-primary">{{ course.division.name }}</span>
+                    </div>
+                    {% if not enrolled  %}
+                    <button class="btn btn-primary" @click="enrolCourse">Daftar</button>
+                    {% endif %}
+                </div>
+                <div class="card academy-content shadow-none border">
+                    <div class="cursor-pointer">
+                        <img src="{{ course.thumbnail.url }}" alt="{{ course.slug }}" class="rounded-top w-100">
+                    </div>
+                    <div class="card-body">
+                        <h5>Deskripsi</h5>
+                        <div>{{ course.description|safe }}</div>
+                        <hr class="mb-4 mt-2" />
+                        <h5>Informasi</h5>
+                        <div class="d-flex flex-wrap">
+                            <div class="me-5">
+                                <p class="text-nowrap">
+                                    <i class="ti ti-checks ti-sm me-2 mt-n2"></i>Skill level: Semua Level
+                                </p>
+                                <p class="text-nowrap"><i class="ti ti-user ti-sm me-2 mt-n2"></i>Anggota: {{ course.members.count }}</p>
+                                <p class="text-nowrap"><i class="ti ti-flag ti-sm me-2 mt-n2"></i>Bahasa: Indonesia</p>
+                            </div>
+                            <div>
+                                <p class="text-nowrap"><i class="ti ti-pencil ti-sm me-2 mt-n2"></i>Tutor: 1</p>
+                            </div>
+                        </div>
+                        <hr class="my-4" />
+                        <h5>Tutor</h5>
+                        <div class="d-flex justify-content-start align-items-center user-name">
+                            <div class="avatar-wrapper">
+                                <div class="avatar me-2">
+                                    <img src="https://ui-avatars.com/api/?name={{ course.division.tutor.first_name }} {{ course.division.tutor.last_name }}&background=random&color=fff" alt="Avatar" class="rounded-circle" />
+                                </div>
+                            </div>
+                            <div class="d-flex flex-column">
+                                <span class="fw-medium">{{ course.division.tutor.first_name }} {{ course.division.tutor.last_name }}</span>
+                                <small class="text-muted">{{ course.division.tutor.major.name }}</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3">
+                <div class="accordion stick-top accordion-bordered" id="courseContent">
+                    <div class="accordion-item active mb-0">
+                        <div class="accordion-header" id="headingOne">
+                            <button type="button" class="accordion-button bg-lighter rounded-0" data-bs-toggle="collapse"
+                                data-bs-target="#chapterOne" aria-expanded="true" aria-controls="chapterOne">
+                                <span class="d-flex flex-column">
+                                    <span class="h5 mb-1">Let's Start</span>
+                                    <span class="fw-normal text-body">{{ course.meetings.count }} Materi</span>
+                                </span>
+                            </button>
+                        </div>
+                        <div id="chapterOne" class="accordion-collapse collapse show" data-bs-parent="#courseContent">
+                            <div class="accordion-body py-3 border-top">
+                                {% for meeting in course.meetings.all %}
+                                <div class="py-3 rounded bg-lighter mb-2">
+                                    <a {% if enrolled %}href="{% url 'kursus_play_course' slug=course.slug meeting=meeting.uuid %}"{% else %}href="#"{% endif %} class="form-check-label d-flex align-items-center ps-3">
+                                        <i class="ti ti-player-play-filled me-2 bg-secondary text-white rounded-circle p-1" style="font-size: 15px"></i>
+                                        <span class="mb-0 h6">{{ meeting.title }}</span>
+                                    </a>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
+
+{% block script %}
+<script src="{% static 'assets/js/pages/kursus/page-detail-member-kursus.js' %}"></script>
+{% endblock script %}

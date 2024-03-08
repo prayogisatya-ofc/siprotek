@@ -217,6 +217,27 @@
                         </a>
                     </li>
                     {% endif %}
+
+                    <li class="menu-header small text-uppercase">
+                        <span class="menu-header-text" data-i18n="Pelatihan">Pelatihan</span>
+                    </li>
+
+                    {% if request.user.role == 'admin' or request.user.role == 'tutor' %}
+                    <li class="menu-item">
+                        <a href="{% url 'kursus_views' %}" class="menu-link">
+                            <i class="menu-icon tf-icons ti ti-books"></i>
+                            <div data-i18n="Data Kursus">Data Kursus</div>
+                        </a>
+                    </li>
+                    {% endif %}
+                    {% if request.user.role == 'member' %}
+                    <li class="menu-item">
+                        <a href="{% url 'kursus_all_course_views' %}" class="menu-link">
+                            <i class="menu-icon tf-icons ti ti-book"></i>
+                            <div data-i18n="Kursus">Kursus</div>
+                        </a>
+                    </li>
+                    {% endif %}
                 </ul>
             </aside>
             <!-- / Menu -->

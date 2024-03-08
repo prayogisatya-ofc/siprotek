@@ -1,0 +1,73 @@
+{% extends "layout.html" %}
+{% load static %}
+
+{% block vendor %}
+<link rel="stylesheet" href="{% static 'assets/vendor/libs/quill/typography.css' %}" />
+<link rel="stylesheet" href="{% static 'assets/vendor/libs/quill/katex.css' %}" />
+<link rel="stylesheet" href="{% static 'assets/vendor/libs/quill/editor.css' %}" />
+{% endblock vendor %}
+
+{% block title %}
+    Tambah Materi
+{% endblock title %}
+
+{% block content %}
+<div class="container-xxl flex-grow-1 container-p-y" id="app">
+    <h4 class="py-3 mb-2"><span class="text-muted fw-light">Kursus / {{ course }} / </span> Tambah Materi</h4>
+
+    <div class="card">
+        <div class="card-header">
+            <h5 class="card-tile mb-0">Detail Materi</h5>
+        </div>
+        <div class="card-body">
+            <form @submit.prevent="onSubmit">
+                <div class="mb-3">
+                    <label class="form-label">Judul</label>
+                    <input type="text" class="form-control" placeholder="Ex: Pengenalan Tools" v-model="form.title" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Kode Video YouTube</label>
+                    <input type="text" class="form-control" placeholder="Ex: 96Wa7o31gNc" v-model="form.video">
+                    <small class="form-text">*Opsional</small>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Isi Materi</label>
+                    <div id="snow-toolbar">
+                        <span class="ql-formats">
+                            <select class="ql-size"></select>
+                        </span>
+                        <span class="ql-formats">
+                            <button class="ql-bold"></button>
+                            <button class="ql-italic"></button>
+                            <button class="ql-underline"></button>
+                            <button class="ql-strike"></button>
+                        </span>
+                        <span class="ql-formats">
+                            <button class="ql-list" value="ordered"></button>
+                            <button class="ql-list" value="bullet"></button>
+                        </span>
+                        <span class="ql-formats">
+                            <button class="ql-script" value="sub"></button>
+                            <button class="ql-script" value="super"></button>
+                        </span>
+                        <span class="ql-formats">
+                            <button class="ql-link"></button>
+                            <button class="ql-blockquote"></button>
+                            <button class="ql-code-block"></button>
+                        </span>
+                    </div>
+                    <div id="snow-editor"></div>
+                    <small class="form-text">*Opsional</small>
+                </div>
+                <button type="submit" class="btn btn-primary">Simpan</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock content %}
+
+{% block script %}
+<script src="{% static 'assets/vendor/libs/quill/katex.js' %}"></script>
+<script src="{% static 'assets/vendor/libs/quill/quill.js' %}"></script>
+<script src="{% static 'assets/js/pages/kursus/page-add-meeting.js' %}"></script>
+{% endblock script %}

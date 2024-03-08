@@ -1,0 +1,147 @@
+{% extends "layout.html" %}
+{% load static %}
+
+{% block vendor %}
+<link rel="stylesheet" href="{% static 'assets/vendor/libs/quill/typography.css' %}" />
+<link rel="stylesheet" href="{% static 'assets/vendor/libs/quill/katex.css' %}" />
+<link rel="stylesheet" href="{% static 'assets/vendor/libs/quill/editor.css' %}" />
+<link rel="stylesheet" href="{% static 'assets/vendor/libs/select2/select2.css' %}" />
+{% endblock vendor %}
+
+{% block title %}
+    Detail Kursus
+{% endblock title %}
+
+{% block content %}
+<div class="container-xxl flex-grow-1 container-p-y" id="app">
+    <h4 class="py-3 mb-2"><span class="text-muted fw-light">Kursus /</span> [[ form.title ]]</h4>
+
+    <div class="row">
+        <div class="col-lg-7 mb-3">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-tile mb-0">Informasi Kursus</h5>
+                </div>
+                <div class="card-body">
+                    <form @submit.prevent="onSubmit">
+                        <div class="mb-3">
+                            <img :src="previewImage" alt="" class="w-100 mb-3 rounded">
+                            <label class="form-label">Thumbnail</label>
+                            <input type="file" class="form-control form-control-file" @change="onFileChange">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Judul</label>
+                            <input type="text" class="form-control" placeholder="Ex: Pelatihan Web Development" v-model="form.title" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Divisi</label>
+                            <select class="form-control form-select select2" data-allow-clear="true" data-placeholder="Divisi" required>
+                                <option value="">Divisi</option>
+                                {% for division in divisions %}
+                                <option value="{{ division.uuid }}">{{ division.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Deskripsi</label>
+                            <div id="snow-toolbar">
+                                <span class="ql-formats">
+                                    <select class="ql-size"></select>
+                                </span>
+                                <span class="ql-formats">
+                                    <button class="ql-bold"></button>
+                                    <button class="ql-italic"></button>
+                                    <button class="ql-underline"></button>
+                                    <button class="ql-strike"></button>
+                                </span>
+                                <span class="ql-formats">
+                                    <button class="ql-list" value="ordered"></button>
+                                    <button class="ql-list" value="bullet"></button>
+                                </span>
+                                <span class="ql-formats">
+                                    <button class="ql-script" value="sub"></button>
+                                    <button class="ql-script" value="super"></button>
+                                </span>
+                                <span class="ql-formats">
+                                    <button class="ql-link"></button>
+                                    <button class="ql-blockquote"></button>
+                                    <button class="ql-code-block"></button>
+                                </span>
+                            </div>
+                            <div id="snow-editor"></div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-5 mb-3">
+            <div class="card mb-3">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-tile mb-0">Daftar Materi</h5>
+                    <a :href="'/courses/' + uuid + '/add'" class="btn btn-primary btn-sm"><i class="ti ti-plus"></i></a>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive overflow-y-auto" style="max-height: 500px;">
+                        <table class="table border-top text-nowrap">
+                            <thead>
+                                <tr>
+                                    <th>Judul Materi</th>
+                                    <th class="text-center">Video</th>
+                                    <th class="text-center">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="d in meetings" :key="d.uuid" class="text-center">
+                                    <td class="text-start">[[ d.title ]]</td>
+                                    <td>
+                                        <a v-if="d.video" :href="d.video" target="_blank" class="btn btn-sm btn-icon"><i class="ti ti-player-play text-primary"></i></a>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-sm-center justify-content-sm-center">
+                                            <button class="btn btn-sm btn-icon delete-record me-2 text-danger" @click="deleteData(d.uuid, d.title)"><i class="ti ti-trash"></i></button>
+                                            <a :href="'/courses/' + uuid + '/' + d.uuid" class="btn btn-sm btn-icon"><i class="ti ti-edit"></i></a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr v-if="meetings.length == 0">
+                                    <td colspan="3" class="text-center">Belum ada materi</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-tile mb-0">Anggota Bergabung</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive overflow-y-auto" style="max-height: 500px;">
+                        <div class="d-flex justify-content-start align-items-center customer-name mb-2" v-for="(member, i) in members" :key="i">
+                            <div class="avatar-wrapper">
+                                <div class="avatar me-2">
+                                    <img :src="'https://ui-avatars.com/api/?name=' + member + '&background=random'" alt class="h-auto rounded-circle" />
+                                </div>
+                            </div>
+                            <div class="d-flex flex-column text-start">
+                                <span class="fw-medium">[[ member ]]</span>
+                            </div>
+                        </div>
+                        <div class="text-center" v-if="members.length == 0">
+                            Belum ada member bergabung
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
+
+{% block script %}
+<script src="{% static 'assets/vendor/libs/quill/katex.js' %}"></script>
+<script src="{% static 'assets/vendor/libs/quill/quill.js' %}"></script>
+<script src="{% static 'assets/vendor/libs/select2/select2.js' %}"></script>
+<script src="{% static 'assets/js/pages/kursus/page-edit-kursus.js' %}"></script>
+{% endblock script %}
